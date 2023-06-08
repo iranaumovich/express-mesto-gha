@@ -12,7 +12,7 @@ function sendUserData(user) {
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(() => res.status(500).send({ message: 'Ошибка сервера' }));
 };
 
 module.exports.getUserById = (req, res) => {
@@ -28,7 +28,7 @@ module.exports.getUserById = (req, res) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные пользователя' });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(500).send({ message: 'Ошибка сервера' });
       }
     });
 };
@@ -42,7 +42,7 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
       } else {
-        res.status(500).send({ message: err._message });
+        res.status(500).send({ message: 'Ошибка сервера' });
       }
     });
 };
@@ -70,7 +70,7 @@ module.exports.updateUser = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       } else {
-        res.status(500).send({ message: err._message });
+        res.status(500).send({ message: 'Ошибка сервера' });
       }
     });
 };
@@ -97,7 +97,7 @@ module.exports.updateUserAvatar = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара' });
       } else {
-        res.status(500).send({ message: err._message });
+        res.status(500).send({ message: 'Ошибка сервера' });
       }
     });
 };

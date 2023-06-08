@@ -19,7 +19,7 @@ module.exports.getCards = (req, res) => {
   Card.find({})
     .populate('owner')
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(() => res.status(500).send({ message: 'Ошибка сервера' }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -33,7 +33,7 @@ module.exports.createCard = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные для создания карточки' });
       } else {
-        res.status(500).send({ message: err._message });
+        res.status(500).send({ message: 'Ошибка сервера' });
       }
     });
 };
@@ -51,7 +51,7 @@ module.exports.deleteCard = (req, res) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка' });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(500).send({ message: 'Ошибка сервера' });
       }
     });
 };
@@ -73,7 +73,7 @@ module.exports.likeCard = (req, res) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка' });
       } else {
-        res.status(500).send({ message: err._message });
+        res.status(500).send({ message: 'Ошибка сервера' });
       }
     });
 };
@@ -95,7 +95,7 @@ module.exports.dislikeCard = (req, res) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные для снятия лайка' });
       } else {
-        res.status(500).send({ message: err._message });
+        res.status(500).send({ message: 'Ошибка сервера' });
       }
     });
 };

@@ -42,12 +42,18 @@ module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (card === null) {
-        res.status(404).send({ message: `Пользователь с id ${req.user._id} не найден` });
+        res.status(404).send({ message: `Карточка с id ${req.params.cardId} не найдена` });
       } else {
         res.send(sendCardData(card));
       }
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка' });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.likeCard = (req, res) => {
@@ -58,13 +64,13 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if (card === null) {
-        res.status(404).send({ message: `Пользователь с id ${req.user._id} не найден` });
+        res.status(404).send({ message: `Карточка с id ${req.params.cardId} не найдена` });
       } else {
         res.send(sendCardData(card));
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка' });
       } else {
         res.status(500).send({ message: err._message });
@@ -80,13 +86,13 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (card === null) {
-        res.status(404).send({ message: `Пользователь с id ${req.user._id} не найден` });
+        res.status(404).send({ message: `Карточка с id ${req.card._id} не найдена` });
       } else {
         res.send(sendCardData(card));
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные для снятия лайка' });
       } else {
         res.status(500).send({ message: err._message });

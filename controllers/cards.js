@@ -86,7 +86,7 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (card === null) {
-        res.status(404).send({ message: `Карточка с id ${req.card._id} не найдена` });
+        res.status(404).send({ message: `Карточка с id ${req.params.cardId} не найдена` });
       } else {
         res.send(sendCardData(card));
       }

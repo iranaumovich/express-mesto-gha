@@ -48,7 +48,9 @@ module.exports.updateUser = (req, res) => {
     req.user._id,
     { name, about },
     {
+      new: true,
       runValidators: true,
+      upsert: true,
     },
   )
     .then((user) => {
@@ -73,7 +75,9 @@ module.exports.updateUserAvatar = (req, res) => {
     req.user._id,
     { avatar },
     {
+      new: true,
       runValidators: true,
+      upsert: true,
     },
   )
     .then((user) => {

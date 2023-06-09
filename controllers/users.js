@@ -1,4 +1,7 @@
 const User = require('../models/user');
+const {
+  ERROR_CODE_400, ERROR_CODE_404, ERROR_CODE_500,
+} = require('../constants');
 
 function sendUserData(user) {
   return {
@@ -12,23 +15,23 @@ function sendUserData(user) {
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => res.status(500).send({ message: 'Ошибка сервера' }));
+    .catch(() => res.status(ERROR_CODE_500).send({ message: 'Ошибка сервера' }));
 };
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (user === null) {
-        res.status(404).send({ message: `Пользователь с id ${req.user._id} не найден` });
+        res.status(ERROR_CODE_404).send({ message: `Пользователь с id ${req.user._id} не найден` });
       } else {
         res.send(sendUserData(user));
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные пользователя' });
+        res.status(ERROR_CODE_400).send({ message: 'Переданы некорректные данные пользователя' });
       } else {
-        res.status(500).send({ message: 'Ошибка сервера' });
+        res.status(ERROR_CODE_500).send({ message: 'Ошибка сервера' });
       }
     });
 };
@@ -40,9 +43,9 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send(sendUserData(user)))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
+        res.status(ERROR_CODE_400).send({ message: 'Переданы некорректные данные при создании пользователя' });
       } else {
-        res.status(500).send({ message: 'Ошибка сервера' });
+        res.status(ERROR_CODE_500).send({ message: 'Ошибка сервера' });
       }
     });
 };
@@ -56,21 +59,20 @@ module.exports.updateUser = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
     .then((user) => {
       if (user === null) {
-        res.status(404).send({ message: `Пользователь с id ${req.user._id} не найден` });
+        res.status(ERROR_CODE_404).send({ message: `Пользователь с id ${req.user._id} не найден` });
       } else {
         res.send(sendUserData(user));
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+        res.status(ERROR_CODE_400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       } else {
-        res.status(500).send({ message: 'Ошибка сервера' });
+        res.status(ERROR_CODE_500).send({ message: 'Ошибка сервера' });
       }
     });
 };
@@ -83,21 +85,20 @@ module.exports.updateUserAvatar = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
     .then((user) => {
       if (user === null) {
-        res.status(404).send({ message: `Пользователь с id ${req.user._id} не найден` });
+        res.status(ERROR_CODE_404).send({ message: `Пользователь с id ${req.user._id} не найден` });
       } else {
         res.send(sendUserData(user));
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара' });
+        res.status(ERROR_CODE_400).send({ message: 'Переданы некорректные данные при обновлении аватара' });
       } else {
-        res.status(500).send({ message: 'Ошибка сервера' });
+        res.status(ERROR_CODE_500).send({ message: 'Ошибка сервера' });
       }
     });
 };

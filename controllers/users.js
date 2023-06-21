@@ -61,6 +61,10 @@ module.exports.createUser = (req, res, next) => {
     }))
     .then((user) => res.send(sendUserData(user)))
     .catch((err) => {
+      if (err.code === 11000) {
+        throw new ConflictingRequestError('Пользователь с таким email уже зарегистрирован');
+      }
+
       if (err.name === 'ValidationError') {
         throw new InvalidUserDataError('Переданы некорректные данные при создании пользователя');
       }
@@ -146,11 +150,6 @@ module.exports.login = (req, res, next) => {
               httpOnly: true,
             });
         });
-    })
-    .catch((err) => {
-      if (err.code === 11000) {
-        throw new ConflictingRequestError('Пользователь с таким email уже зарегистрирован');
-      }
     })
     .catch(next);
 };

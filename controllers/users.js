@@ -27,7 +27,7 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (user === null) {
-        throw new NotFoundError(`Пользователь с id ${req.user._id} не найден`);
+        throw new NotFoundError(`Пользователь с id ${req.params.userId} не найден`);
       } else {
         res.send(sendUserData(user));
       }
@@ -36,12 +36,14 @@ module.exports.getUserById = (req, res, next) => {
       if (err.name === 'CastError') {
         throw new InvalidUserDataError('Переданы некорректные данные пользователя');
       }
+
+      throw err;
     })
     .catch(next);
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
-  User.findOne(req.user)
+  User.findById(req.user._id)
     .then((user) => res.send(sendUserData(user)))
     .catch(next);
 };
@@ -145,11 +147,7 @@ module.exports.login = (req, res, next) => {
             { expiresIn: '7d' },
           );
 
-          res
-            .cookie('jwt', token, {
-              maxAge: 3600000 * 24 * 7,
-              httpOnly: true,
-            }).send('Authorized');
+          return res.send({ token });
         });
     })
     .catch(next);

@@ -129,7 +129,7 @@ module.exports.login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new InvalidUserDataError('Введен некорректный email'));
+        return Promise.reject(new InvalidCredentialsError('Введен некорректный email'));
       }
 
       return bcrypt.compare(password, user.password)

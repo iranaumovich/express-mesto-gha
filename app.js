@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const { celebrate, Joi, errors } = require('celebrate');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const { urlRegex } = require('./utils');
+const NotFoundError = require('./errors/NotFoundError');
+const errorHandler = require('./middlewares/error-handler');
 
 // настроили порт из переменной окружения, который слушаем.
 const { PORT = 3000 } = process.env;
@@ -26,7 +29,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(/^[https?://(www.)?][\w\d-._~:/?#[\]@!$&'()*+,;=]{1,}#?$/),
+    avatar: Joi.string().regex(urlRegex),
     email: Joi.string().required().email({ minDomainSegments: 2 }),
     password: Joi.string().required(),
   }),
@@ -37,23 +40,12 @@ app.use(auth);
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
-app.use((req, res, next) => {
-  res.status(404).send({ message: 'Путь не найден' });
-  next();
+app.use('*', (req, res, next) => {
+  next(new NotFoundError('Маршрут не найден'));
 });
 
 app.use(errors());
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка' : message,
-    });
-  next();
-});
+app.use(errorHandler);
 
 app.listen(PORT);

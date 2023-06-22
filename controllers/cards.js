@@ -16,7 +16,7 @@ module.exports.createCard = (req, res, next) => {
 
   Card.create({ name, link, owner: id })
     .then((card) => card.populate('owner'))
-    .then((card) => res.send(card))
+    .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         throw new InvalidUserDataError('Переданы некорректные данные для создания карточки');
@@ -28,25 +28,30 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
-      if (card === null) {
-        throw new NotFoundError(`Карточка с id ${req.params.cardId} не найдена`);
-      }
-      if (!card.owner.equals(req.user._id)) {
-        throw new ForbiddenError('Нет прав для удаления карточки');
-      }
+      if (card.owner.equals(req.user._id)) {
+        Card.findByIdAndRemove(req.params.cardId)
+          .then((card) => {
+            if (card === null) {
+              throw new NotFoundError(`Карточка с id ${req.params.cardId} не найдена`);
+            }
+            if (!card.owner.equals(req.user._id)) {
+              throw new ForbiddenError('Нет прав для удаления карточки');
+            }
 
-      res.send(card);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new InvalidUserDataError('Переданы некорректные данные для удаления карточки');
-      }
+            res.send(card);
+          })
+          .catch((err) => {
+            if (err.name === 'CastError') {
+              throw new InvalidUserDataError('Переданы некорректные данные для удаления карточки');
+            }
 
-      throw err;
-    })
-    .catch(next);
+            throw err;
+          })
+          .catch(next);
+      }
+    });
 };
 
 module.exports.likeCard = (req, res, next) => {

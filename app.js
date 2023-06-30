@@ -6,6 +6,7 @@ const auth = require('./middlewares/auth');
 const { urlRegex } = require('./utils');
 const NotFoundError = require('./errors/NotFoundError');
 const errorHandler = require('./middlewares/error-handler');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 // настроили порт из переменной окружения, который слушаем.
 const { PORT = 3000 } = process.env;
@@ -18,6 +19,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 app.use(express.json());
+
+app.use(requestLogger);
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -39,6 +42,8 @@ app.use(auth);
 
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
+
+app.use(errorLogger);
 
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Маршрут не найден'));
